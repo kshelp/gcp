@@ -1,0 +1,23 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nginx-deployment
+  labels:
+    app: nginx
+spec:
+  replicas: 3   # Pod 3개 유지
+  selector:
+    matchLabels:
+      app: nginx
+  template:
+    metadata:
+      labels:
+        app: nginx
+    spec:
+      containers:
+      - name: nginx
+        # image: nginx:1.21
+        image: asia-northeast3-docker.pkg.dev/cloud-05-470805/k8s-repo/nginx:1.21
+        ports:
+        - containerPort: 80
+
