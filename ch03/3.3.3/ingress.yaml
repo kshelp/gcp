@@ -1,0 +1,32 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: my-app-ingress
+  annotations:
+    kubernetes.io/ingress.class: "gce"
+    kubernetes.io/ingress.global-static-ip-name: "my-static-ip"
+    networking.gke.io/managed-certificates: "my-managed-cert"
+    networking.gke.io/v1beta1.FrontendConfig: "my-frontendconfig"
+spec:
+  rules:
+  - host: kshelp.o-r.kr
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: react-app
+            port:
+              number: 80
+  - host: www.kshelp.o-r.kr   # ← 추가
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: react-app
+            port:
+              number: 80
+
