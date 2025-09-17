@@ -1,0 +1,28 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: react-app
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: react-app
+  template:
+    metadata:
+      labels:
+        app: react-app
+    spec:
+      containers:
+        - name: react-app
+          image: asia-northeast3-docker.pkg.dev/cloud-05-470805/k8s-repo/react-app
+          ports:
+            - containerPort: 80
+          volumeMounts:
+            - name: react-nginx-config
+              mountPath: /etc/nginx/conf.d/default.conf
+              subPath: default.conf
+      volumes:
+        - name: react-nginx-config
+          configMap:
+            name: react-nginx-config

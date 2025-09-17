@@ -1,0 +1,69 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: django-nginx
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: django
+  template:
+    metadata:
+      labels:
+        app: django
+    spec:
+      volumes:
+        - name: nginx-config
+          configMap:
+            name: nginx-config
+        - name: static-volume
+          emptyDir: {}
+      containers:
+        - name: django-app
+          image: asia-northeast3-docker.pkg.dev/cloud-05-470805/k8s-repo/django-app
+          command: ["/bin/sh", "-c"]
+          args:
+            - |
+              python manage.py migrate &&
+              python manage.py collectstatic --noinput &&
+              python manage.py createsuperuser --noinput || true &&
+              gunicorn mysite.wsgi:application --bind 0.0.0.0:8000
+          ports:
+            - containerPort: 8000
+          env:
+            - name: DEBUG
+              value: "0"
+            - name: DB_HOST
+              value: "34.64.146.200"
+            - name: DB_PORT
+              value: "3306"
+            - name: DB_NAME
+              value: "book_ex"
+            - name: DB_USER
+              value: "zerock"
+            - name: DB_PASSWORD
+              value: "zerock"
+            - name: CSRF_TRUSTED_ORIGINS
+              value: "http://34.158.208.67:8000,http://localhost:8000"
+            # Django admin 계정 정보
+            - name: DJANGO_SUPERUSER_USERNAME
+              value: "admin"
+            - name: DJANGO_SUPERUSER_EMAIL
+              value: "admin@example.com"
+            - name: DJANGO_SUPERUSER_PASSWORD
+              value: "admin"
+          volumeMounts:
+            - name: static-volume
+              mountPath: /app/www_dir/static
+
+        - name: nginx
+          image: nginx:alpine
+          ports:
+            - containerPort: 80
+          volumeMounts:
+            - name: nginx-config
+              mountPath: /etc/nginx/conf.d
+            - name: static-volume
+              mountPath: /static
+

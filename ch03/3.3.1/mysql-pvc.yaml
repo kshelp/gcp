@@ -8,4 +8,5 @@ spec:
   resources:
     requests:
       storage: 10Gi
+  storageClassName: standard   # GKE 기본 StorageClass (자동으로 PD 생성)
 

@@ -1,0 +1,15 @@
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: django-svc
+spec:
+  selector:
+    app: django
+  type: LoadBalancer
+  #loadBalancerIP: 192.168.127.249
+  ports:
+    - protocol: TCP
+      port: 8000
+      targetPort: 80
+
